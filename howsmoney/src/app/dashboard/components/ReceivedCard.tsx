@@ -49,18 +49,27 @@ export default function ReceivedCard() {
     }
 
     async function getReceived() {
-        const {data, error} = await supabase
-        .from("received")
-        .select("amount, category, date_received")
-        .order("date_received", {ascending: false});
+        const {data: {user}, error} = await supabase.auth.getUser();
+
+ 
+        if(!user) {
+            console.log("No user found!");
+        }
 
         if(error) {
-            alert(error.message);
+            console.log(error.message);
             return;
         }
 
-         console.log("received rows:", data);
-        setReceivedRows(data ?? [] as ReceivedRow[]);
+
+        const {data, error:fetchError} = await supabase
+        .from("received")
+        .select("amount, category, date_received")
+        .eq("user_id", user?.id)
+        .order("date_received", {ascending: false});
+
+        console.log("received rows:", data);
+        setReceivedRows(data ?? []);
     }
 
     async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -82,7 +91,7 @@ export default function ReceivedCard() {
         setAmount("");
         setCategory("");
         setDateReceived("");
-
+        
         getReceived();
     }
 
