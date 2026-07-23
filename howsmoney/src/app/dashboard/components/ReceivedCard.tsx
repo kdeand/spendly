@@ -2,11 +2,13 @@
 import {useState, useEffect} from "react";
 import {supabase} from "@/app/lib/supabase";
 
+//to set a type
 type Category = {
     name: string;
 }
 
 type ReceivedRow = {
+    id: number;
     amount: number;
     date_received: string;
     category: string
@@ -22,7 +24,6 @@ export default function ReceivedCard() {
         //fetch rows for the categories in received
     const [incomeCategories, setIncomeCategories] = useState<Category[]>([]);
     const [receivedRows, setReceivedRows] = useState<ReceivedRow[]>([]);
-
 
     //runs everything
     useEffect(() => {
@@ -50,8 +51,6 @@ export default function ReceivedCard() {
 
     async function getReceived() {
         const {data: {user}, error} = await supabase.auth.getUser();
-
- 
         if(!user) {
             console.log("No user found!");
         }
@@ -64,12 +63,27 @@ export default function ReceivedCard() {
 
         const {data, error:fetchError} = await supabase
         .from("received")
-        .select("amount, category, date_received")
+        .select("id, amount, category, date_received")
         .eq("user_id", user?.id)
         .order("date_received", {ascending: false});
 
         console.log("received rows:", data);
         setReceivedRows(data ?? []);
+    }
+
+    async function deleteReceived(id: number) {
+        if(!confirm("Delete this record?")) return;
+        const { error } = await supabase
+        .from("received")
+        .delete()
+        .eq("id", id);
+
+        if (error) {
+            console.log(error.message);
+            return;
+        }
+
+        getReceived();
     }
 
     async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -145,15 +159,20 @@ export default function ReceivedCard() {
                             <th>Amount</th>
                             <th>Category</th>
                             <th>Date Received</th>
+                            <th></th>
                         </tr>
 
                     </thead>
                     <tbody>
                         {receivedRows.map((row, index) => (
                                 <tr key={index}>
-                                <td>{row.amount}</td>
+                                <td>    {row.amount}</td>
                                 <td>{row.category}</td>
                                 <td>{row.date_received}</td>
+
+                                <td>
+                                    <button onClick={() => {deleteReceived(row.id)}}> X </button>
+                                </td>
                             </tr>
                         ))}
                     </tbody>

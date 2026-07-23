@@ -4,7 +4,6 @@ import {useState, useEffect} from "react";
 import ReceivedCard from "@/app/dashboard/components/ReceivedCard";
 
 export default function DashBoard() {
-
     const [email, setEmail] = useState<String>("");
 
     useEffect(() => {
@@ -29,6 +28,7 @@ export default function DashBoard() {
         <br /> <br />
         <h1> {email}'s Dashboard</h1>
         <ReceivedCard />
+
         </main>
 
 
