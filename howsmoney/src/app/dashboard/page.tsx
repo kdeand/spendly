@@ -1,6 +1,7 @@
 "use client"
 import {supabase} from "@/app/lib/supabase";
 import {useState, useEffect} from "react";
+import ReceivedCard from "@/app/dashboard/components/ReceivedCard";
 
 export default function DashBoard() {
 
@@ -24,6 +25,12 @@ export default function DashBoard() {
 
     return(
         <main> Hello from dashboard! 
-        Logged in as: {email} </main>
+        Logged in as: {email} 
+        <br /> <br />
+        <h1> {email}'s Dashboard</h1>
+        <ReceivedCard />
+        </main>
+
+
     )
 }
