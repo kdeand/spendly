@@ -12,6 +12,7 @@ type ReceivedRow = {
     amount: number;
     date_received: string;
     category: string
+    description: string;
 }
 
 export default function ReceivedCard() {  
@@ -20,6 +21,7 @@ export default function ReceivedCard() {
     const [amount, setAmount] = useState("");
     const [category, setCategory] = useState("");
     const [date_received, setDateReceived] = useState("");
+    const [description, setDescription] = useState("");
 
         //fetch rows for the categories in received
     const [incomeCategories, setIncomeCategories] = useState<Category[]>([]);
@@ -63,7 +65,7 @@ export default function ReceivedCard() {
 
         const {data, error:fetchError} = await supabase
         .from("received")
-        .select("id, amount, category, date_received")
+        .select("id, amount, category, date_received, description")
         .eq("user_id", user?.id)
         .order("date_received", {ascending: false});
 
@@ -92,6 +94,7 @@ export default function ReceivedCard() {
         console.log(amount);
         console.log(category);
         console.log(date_received);
+        console.log(description);
 
         const { data: { user }} = await supabase.auth.getUser();
 
@@ -99,13 +102,14 @@ export default function ReceivedCard() {
                     user_id: user?.id,
                     amount: Number(amount),
                     category,
-                    date_received: date_received
+                    date_received: date_received,
+                    description
         });
 
         setAmount("");
         setCategory("");
         setDateReceived("");
-        
+        setDescription("");
         getReceived();
     }
 
@@ -149,6 +153,15 @@ export default function ReceivedCard() {
                     />
                 </div>
 
+                <div>
+                    <label htmlFor="description"> Description </label>
+                    <textarea name="description" 
+                    id="description"
+                     value = {description}
+                     onChange={(e) => setDescription(e.target.value)}>
+                    </textarea>
+                </div>
+
                 <button type="submit">
                     Add Income
                 </button>
@@ -169,7 +182,7 @@ export default function ReceivedCard() {
                                 <td>    {row.amount}</td>
                                 <td>{row.category}</td>
                                 <td>{row.date_received}</td>
-
+                                <td>{row.description}</td>
                                 <td>
                                     <button onClick={() => {deleteReceived(row.id)}}> X </button>
                                 </td>

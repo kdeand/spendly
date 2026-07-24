@@ -2,6 +2,7 @@
 import {supabase} from "@/app/lib/supabase";
 import {useState, useEffect} from "react";
 import ReceivedCard from "@/app/dashboard/components/ReceivedCard";
+import OutgoingCard from "./components/OutgoingCard";
 
 export default function DashBoard() {
     const [email, setEmail] = useState<String>("");
@@ -28,6 +29,7 @@ export default function DashBoard() {
         <br /> <br />
         <h1> {email}'s Dashboard</h1>
         <ReceivedCard />
+        <OutgoingCard />
 
         </main>
 
