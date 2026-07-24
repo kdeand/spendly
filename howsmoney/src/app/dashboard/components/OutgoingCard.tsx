@@ -16,6 +16,10 @@ type OutgoingRow = {
 
 }
 
+type AmountRow = {
+    amount: number;
+}
+
 export default function OutgoingCard() {
 
     //useState
@@ -24,6 +28,7 @@ export default function OutgoingCard() {
     const [description, setDescription] = useState("");
     const [date_spent, setDateSpent] = useState("");
 
+    const [totalOutgoing, setTotalOutgoing] = useState(0);
     const [editingId, setEditingId] = useState<number | null>(null);
     //for database declarations
     const [outgoingCategories, setOutgoingCategories] = useState<Category[]>([]);
@@ -32,7 +37,34 @@ export default function OutgoingCard() {
     useEffect(() => {
         getCategories();
         getOutgoing();
+        getTotalOutgoing();
     }, []);
+
+    async function getTotalOutgoing() {
+        const {data : {user}, error} = await supabase.auth.getUser();
+        if(!user) {
+            console.log("No user found!");
+            return;
+        }
+
+        if(error) {
+            console.log(error.message);
+            return;
+        }
+
+        const {data, error:fetchError} = await supabase
+            .from("outgoing")
+            .select("amount")
+            .eq("user_id", user?.id);
+
+        if(fetchError) {
+            console.log(fetchError.message);
+            return;
+        }
+
+        const total = ((data ?? []) as AmountRow[]).reduce((sum, row)=> sum + row.amount, 0);
+        setTotalOutgoing(total);
+    }
 
     async function getOutgoing() {
         const {data : {user}, error} = await supabase.auth.getUser();
@@ -230,6 +262,10 @@ export default function OutgoingCard() {
                     ))}
                 </tbody>
             </table>
+
+            <div>
+                <h1>Total Outgoing: {totalOutgoing}</h1>
+            </div>
         </main>
     )
     

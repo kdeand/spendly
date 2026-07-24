@@ -14,6 +14,14 @@ type BillRow = {
     description: string;
 }
 
+type PaidAmountRow = {
+    amount: number;
+}
+
+type PendingAmountRow = {
+    amount:number;
+}
+
 
 export default function BillCard(){
 
@@ -23,6 +31,9 @@ export default function BillCard(){
     const [status, setStatus] = useState("Pending");
     const [description, setDescription] = useState("");
 
+    const [totalPaid, setTotalPaid] = useState(0);
+    const [totalPending, setTotalPending] = useState(0);
+
     const [editingId, setEditingId] = useState<number | null>(null);
 
     const [billCategory, setBillCategory] = useState<Category[]>([]);
@@ -31,8 +42,64 @@ export default function BillCard(){
     useEffect (() => {
         getCategories();
         getBills();
+        getPending();
+        getPaid();
     }, []);
 
+
+    async function getPaid() {
+        const {data: {user}, error} = await supabase.auth.getUser();
+        if(!user) {
+            console.log("No user found!");
+            return;
+        }
+
+        if(error) {
+            console.log(error.message);
+            return;
+        }
+
+        const {data, error: fetchError} = await supabase
+            .from("bills")
+            .select("amount")
+            .eq("status", "Paid")
+            .eq("user_id", user?.id);
+
+        if (fetchError) {
+            console.log(fetchError.message);
+            return;
+        }
+
+        const totalPaid = ((data ?? []) as PaidAmountRow[]).reduce((sum, row) => sum + row.amount, 0);
+        setTotalPaid(totalPaid);
+    }
+
+    async function getPending() {
+        const {data: {user}, error} = await supabase.auth.getUser();
+        if(!user) {
+            console.log("No user found!");
+            return;
+        }
+
+        if(error) {
+            console.log(error.message);
+            return;
+        }
+
+        const {data, error: fetchError} = await supabase
+            .from("bills")
+            .select("amount")
+            .eq("status", "Pending")
+            .eq("user_id", user?.id);
+
+        if (fetchError) {
+            console.log(fetchError.message);
+            return;
+        }
+
+        const totalPending = ((data ?? []) as PendingAmountRow[]).reduce((sum, row) => sum + row.amount, 0);
+        setTotalPending(totalPending);
+    }
     
 
     async function getCategories() {
@@ -254,7 +321,8 @@ export default function BillCard(){
             </table>
 
             <div>
-                {/**Total: */}
+                <h1>Total Paid Bill:  {totalPaid} </h1>
+                <h1>Total Pending Bill: {totalPending} </h1>
             </div>
         </main>
     );

@@ -265,7 +265,7 @@ export default function ReceivedCard() {
                 </table>
 
                 <div>
-                    <h1> Total: {collectedAmount} </h1>
+                    <h1> Total Income: {collectedAmount} </h1>
                 </div>
         </main>
         
