@@ -1,0 +1,62 @@
+.dashboard {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    background: #f5f7fb;
+    min-height: 100vh;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.dashboard-header {
+    background: white;
+    padding: 2rem;
+    border-radius: 15px;
+    margin-bottom: 2rem;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+}
+
+.dashboard-header h1 {
+    margin-top: 0.5rem;
+    color: #1f2937;
+    font-size: 2.2rem;
+}
+
+.welcome-text {
+    font-size: 1.2rem;
+    color: #16a34a;
+    font-weight: bold;
+    margin: 0;
+}
+
+.logged-in {
+    color: #6b7280;
+    margin-top: 0.5rem;
+}
+
+.dashboard-section {
+    background: white;
+    border-radius: 15px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+}
+
+.section-title {
+    margin-bottom: 1.25rem;
+    padding-left: 12px;
+    border-left: 6px solid;
+    font-size: 1.6rem;
+    color: #1f2937;
+}
+
+.income {
+    border-color: #16a34a;
+}
+
+.outgoing {
+    border-color: #dc2626;
+}
+
+.bills {
+    border-color: #f59e0b;
+}

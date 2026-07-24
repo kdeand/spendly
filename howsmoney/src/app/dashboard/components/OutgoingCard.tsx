@@ -133,7 +133,7 @@ export default function OutgoingCard() {
         setEditingId(row.id);
         setCategory(row.category);
         setAmount(row.amount.toString());
-        setDescription(row.description);
+        setDescription(row.description);    
         setDateSpent(row.date_spent);
         }
     async function getCategories() {

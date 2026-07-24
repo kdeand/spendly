@@ -33,6 +33,8 @@ export default function BillCard(){
         getBills();
     }, []);
 
+    
+
     async function getCategories() {
         const { data, error} = await supabase
         .from("categories")
@@ -246,12 +248,14 @@ export default function BillCard(){
                             <td>
                                 <button type = "button" onClick={() => {deleteBill(row.id)}}>X</button>
                             </td>
-
-
                         </tr>
                     ))}
                 </tbody>
             </table>
+
+            <div>
+                {/**Total: */}
+            </div>
         </main>
     );
 }

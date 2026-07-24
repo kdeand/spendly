@@ -15,6 +15,10 @@ type ReceivedRow = {
     description: string;
 }
 
+type AmountRow = {
+    amount: number;
+}
+
 export default function ReceivedCard() {  
 
     //USESTATE
@@ -28,12 +32,15 @@ export default function ReceivedCard() {
         //fetch rows for the categories in received
     const [incomeCategories, setIncomeCategories] = useState<Category[]>([]);
     const [receivedRows, setReceivedRows] = useState<ReceivedRow[]>([]);
+    const [collectedAmount, setCollectedAmount] = useState(0);
 
     //runs everything
     useEffect(() => {
         getCategories();
         getReceived();
+        getTotal();
     }, []);
+
 
     //gets the categories from the database
     async function getCategories(){
@@ -73,6 +80,35 @@ export default function ReceivedCard() {
 
         console.log("received rows:", data);
         setReceivedRows(data ?? []);
+    }
+
+    //get total income
+//GET TOTAL INCOME ===========================
+
+    async function getTotal() {
+        const {data: {user}, error} = await supabase.auth.getUser();
+        if(!user) {
+            console.log("No user found!");
+        }
+
+        if(error) {
+            console.log(error.message);
+            return;
+        }
+
+        const {data, error: fetchError} = await supabase
+            .from("received")
+            .select("amount")
+            .eq("user_id", user?.id);
+
+        if(fetchError) {
+            console.log(fetchError.message);
+            return;
+        }
+
+        const total = ((data ?? []) as AmountRow[]).reduce((sum,row) => sum + row.amount, 0);
+
+        setCollectedAmount(total);
     }
 
     async function deleteReceived(id: number) {
@@ -196,7 +232,7 @@ export default function ReceivedCard() {
                 </div>
 
                 <button type="submit">
-                    {editingId? "Update Bill" : "Add Bill"}
+                    {editingId? "Update Income" : "Add Income"}
                 </button>
             </form>
             <table>
@@ -227,6 +263,10 @@ export default function ReceivedCard() {
                     </tbody>
 
                 </table>
+
+                <div>
+                    <h1> Total: {collectedAmount} </h1>
+                </div>
         </main>
         
     )
