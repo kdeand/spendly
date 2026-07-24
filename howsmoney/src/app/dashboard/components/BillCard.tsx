@@ -23,6 +23,8 @@ export default function BillCard(){
     const [status, setStatus] = useState("Pending");
     const [description, setDescription] = useState("");
 
+    const [editingId, setEditingId] = useState<number | null>(null);
+
     const [billCategory, setBillCategory] = useState<Category[]>([]);
     const [billRows, setBillRows] = useState<BillRow[]>([]);
 
@@ -53,6 +55,7 @@ export default function BillCard(){
          const {data: {user}, error} = await supabase.auth.getUser();
         if(!user) {
             console.log("No user found!");
+            return;
         }
 
         if(error) {
@@ -67,6 +70,12 @@ export default function BillCard(){
 
         console.log("bill rows:", data);
         setBillRows(data ?? []);
+
+        if (fetchError) {
+            console.log(fetchError);
+            console.log(fetchError.message);
+            return;
+        }
     }
 
     async function deleteBill(id: number) {
@@ -94,31 +103,66 @@ export default function BillCard(){
         console.log(status);
 
         const {data: {user}} = await supabase.auth.getUser();
-        const {data, error} = await supabase.from("bills").insert({
-            user_id: user?.id,
-            category,
-            amount: Number(amount),
-            description,
-            due_date: due_date,
-            status
 
-        });
+        if(editingId !== null) {
+            const {data, error} = await supabase.from("bills").update({
+                user_id: user?. id,
+                category,
+                amount: Number(amount),
+                description,
+                due_date: due_date,
+                status
 
-        if (error) {
-    console.log(error.message, error);
-    return;
-}
+            })
+                .eq("id", editingId)
+                .select();
+                 console.log("UPDATE DATA:", data);
+                 console.log("UPDATE ERROR:", error);
+                 console.log("editingId:", editingId);
 
+            if (error) {
+                console.log(error.message, error);
+                return;
+
+            }
+        } else {
+            const {data, error} = await supabase.from("bills").insert({
+                user_id: user?.id,
+                category,
+                amount: Number(amount),
+                description,
+                due_date: due_date,
+                status
+            })
+            .select();
+            console.log("UPDATE DATA:", data);
+            console.log("UPDATE ERROR:", error);
+
+          
+            if (error) {
+                console.log(error.message, error);
+                return;
+
+            }
+        }
+
+        setEditingId(null);
         setAmount("");
-        setCategory("");
         setDueDate("");
         setDescription("");
-        setStatus("");
+        setStatus("Pending");
         getBills();
     }
 
 
-
+    async function editBill(row: BillRow) {
+        setEditingId(row.id);   
+        setCategory(row.category);
+        setAmount(row.amount.toString());
+        setDescription(row.description);
+        setDueDate(row.due_date);
+        setStatus(row.status);
+    }
 
     return (
         <main>
@@ -173,7 +217,7 @@ export default function BillCard(){
                     </select>
                 </div>
 
-                <button type = "submit"> Add Bill </button>
+                <button type = "submit"> {editingId ? "Update Bill" : "Add Bill"} </button>
             </form>
 
             <table>
@@ -190,15 +234,20 @@ export default function BillCard(){
 
                 <tbody>
                     {billRows.map((row, index) => (
-                        <tr key = {index}>
+                        <tr key = {row.id}>
                             <td>{row.category}</td>
                             <td>{row.amount}</td>
                             <td>{row.description}</td>
                             <td>{row.due_date}</td>
                             <td>{row.status}</td>
                             <td>
-                                <button onClick={() => {deleteBill(row.id)}}>X</button>
+                                <button type = "button" onClick={() => {editBill(row)}}>Edit</button>
                             </td>
+                            <td>
+                                <button type = "button" onClick={() => {deleteBill(row.id)}}>X</button>
+                            </td>
+
+
                         </tr>
                     ))}
                 </tbody>

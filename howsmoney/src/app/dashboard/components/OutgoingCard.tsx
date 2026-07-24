@@ -24,7 +24,7 @@ export default function OutgoingCard() {
     const [description, setDescription] = useState("");
     const [date_spent, setDateSpent] = useState("");
 
-
+    const [editingId, setEditingId] = useState<number | null>(null);
     //for database declarations
     const [outgoingCategories, setOutgoingCategories] = useState<Category[]>([]);
     const [outgoingRows, setOutgoingRows] = useState<OutgoingRow[]>([]);
@@ -39,6 +39,7 @@ export default function OutgoingCard() {
 
         if (!user) {
             console.log("No user found!");
+            return;
         }
 
         if(error) {
@@ -54,6 +55,13 @@ export default function OutgoingCard() {
 
         console.log ("outgoing rows: ", data);
         setOutgoingRows(data ?? []);
+
+
+        if (fetchError) {
+            console.log(fetchError);
+            console.log(fetchError.message);
+            return;
+        }
     }
 
     async function deleteOutgoing(id: number) {
@@ -81,21 +89,53 @@ export default function OutgoingCard() {
 
         const {data : {user}} = await supabase.auth.getUser();
 
-        const {data, error} = await supabase.from("outgoing").insert({
-            user_id: user?.id,
-            amount: Number(amount),
-            category,
-            date_spent: date_spent,
-            description
-        });
+        if(editingId !== null){
+            const {data, error} = await supabase.from("outgoing").update({
+                user_id: user?.id,
+                amount: Number(amount),
+                category,
+                date_spent: date_spent,
+                description
+            })
+            .eq("id", editingId)
+            .select();
 
+            if (error) {
+                console.log(error.message, error);
+                return;
+                } 
+                
+            } else {
+            const {data, error} = await supabase.from("outgoing").insert({
+                user_id: user?.id,
+                amount: Number(amount),
+                category,
+                date_spent: date_spent,
+                description
+            })
+            .select();
+            if (error) {
+                console.log(error.message, error);
+                return;
+             }
+
+            }
+
+        setEditingId(null);
         setAmount("");
-        setCategory("");
         setDateSpent("");
         setDescription("");
 
         getOutgoing();
     }
+
+    async function editOutgoing(row: OutgoingRow) {
+        setEditingId(row.id);
+        setCategory(row.category);
+        setAmount(row.amount.toString());
+        setDescription(row.description);
+        setDateSpent(row.date_spent);
+        }
     async function getCategories() {
         const {data, error } = await supabase
         .from("categories")
@@ -158,7 +198,7 @@ export default function OutgoingCard() {
                         value = {description}
                         onChange={(e) => setDescription(e.target.value)} />
                 </div>
-                <button type="submit">Add Expense</button>
+                <button type="submit">{editingId ? "Update Bill" : "Add Bill"}</button>
             </form>
 
             <table>
@@ -179,6 +219,10 @@ export default function OutgoingCard() {
                             <td>{row.category} </td>
                             <td>{row.date_spent}</td>
                             <td>{row.description}</td>
+
+                            <td>
+                                <button onClick={() => {editOutgoing(row)}}>Edit</button>
+                            </td>
                             <td>
                                 <button onClick={() => {deleteOutgoing(row.id)}}> X </button>
                             </td>
@@ -189,4 +233,4 @@ export default function OutgoingCard() {
         </main>
     )
     
-}           
+}        

@@ -23,6 +23,8 @@ export default function ReceivedCard() {
     const [date_received, setDateReceived] = useState("");
     const [description, setDescription] = useState("");
 
+    const [editingId, setEditingId] = useState<number | null>(null);
+
         //fetch rows for the categories in received
     const [incomeCategories, setIncomeCategories] = useState<Category[]>([]);
     const [receivedRows, setReceivedRows] = useState<ReceivedRow[]>([]);
@@ -97,20 +99,51 @@ export default function ReceivedCard() {
         console.log(description);
 
         const { data: { user }} = await supabase.auth.getUser();
+        if(editingId !== null){
+            const { data, error } = await supabase.from("received").update({
+                            user_id: user?.id,
+                            amount: Number(amount),
+                            category,
+                            date_received: date_received,
+                            description
+                })
+                .eq("id", editingId)
+                .select();
 
-        const { data, error } = await supabase.from("received").insert({
+                if(error){
+                    console.log(error.message, error);
+                    return;
+                }
+
+        } else {
+                const { data, error } = await supabase.from("received").insert({
                     user_id: user?.id,
                     amount: Number(amount),
                     category,
                     date_received: date_received,
                     description
-        });
+                })
+                .select();
+
+                if(error) {
+                    console.log(error.message, error);
+                    return;
+                }
+        }
+
 
         setAmount("");
-        setCategory("");
         setDateReceived("");
         setDescription("");
         getReceived();
+    }
+
+    async function editReceived(row: ReceivedRow) {
+        setEditingId(row.id);
+        setCategory(row.category);
+        setAmount(row.amount.toString());
+        setDescription(row.description);
+        setDateReceived(row.date_received);
     }
 
     return(
@@ -163,7 +196,7 @@ export default function ReceivedCard() {
                 </div>
 
                 <button type="submit">
-                    Add Income
+                    {editingId? "Update Bill" : "Add Bill"}
                 </button>
             </form>
             <table>
@@ -178,13 +211,16 @@ export default function ReceivedCard() {
                     </thead>
                     <tbody>
                         {receivedRows.map((row, index) => (
-                                <tr key={index}>
-                                <td>    {row.amount}</td>
+                                <tr key={row.id}>
+                                <td>{row.amount}</td>
                                 <td>{row.category}</td>
                                 <td>{row.date_received}</td>
                                 <td>{row.description}</td>
                                 <td>
-                                    <button onClick={() => {deleteReceived(row.id)}}> X </button>
+                                    <button type="button" onClick = {() => {editReceived(row)} }>Edit</button>
+                                </td>
+                                <td>
+                                    <button type = "button" onClick={() => {deleteReceived(row.id)}}> X </button>
                                 </td>
                             </tr>
                         ))}
