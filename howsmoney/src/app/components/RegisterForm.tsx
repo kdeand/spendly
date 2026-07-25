@@ -32,38 +32,49 @@ export default function RegisterForm() {
         }
 
   return (
-    <main>
-    <form onSubmit = {handleSubmit}>
-      <label htmlFor="email">Email: </label>
-      <input
-        id="email"
-        type="email"
-        value = {email}
-        onChange = {(e) => setEmail(e.target.value)}
-        placeholder="Enter your email"
-      />
+        <main className="flex min-h-screen items-center justify-center bg-gray-100">
+            <form
+                onSubmit={handleSubmit}
+                className="flex w-80 flex-col gap-4 rounded-lg bg-white p-6 shadow"
+            >
+                <h1 className="text-center text-2xl font-bold">
+                    Create Account
+                </h1>
 
-      <label htmlFor="password">Password: </label>
-      <input
-        id="password"
-        type="password"
-        value = {password}
-        onChange ={(e) => setPassword(e.target.value)}
-        placeholder="Enter your password"
-      />
+                <input
+                    id="email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="Enter your email"
+                    className="rounded border p-2 outline-none focus:border-blue-500"
+                />
 
-      <label htmlFor="confirmPassword">Confirm Password: </label>
-      <input
-        id="confirmPassword"
-        type="password"
-        value= {confirmPassword}
-        onChange={(e) => setConfirmPassword(e.target.value)}
-        placeholder="Confirm your password"
-      />
+                <input
+                    id="password"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Enter your password"
+                    className="rounded border p-2 outline-none focus:border-blue-500"
+                />
 
-      <button type="submit">Create Account</button>
-    </form>
-    
-    </main>
-  );
+                <input
+                    id="confirmPassword"
+                    type="password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder="Confirm your password"
+                    className="rounded border p-2 outline-none focus:border-blue-500"
+                />
+
+                <button
+                    type="submit"
+                    className="rounded bg-blue-600 py-2 text-white transition hover:bg-blue-700"
+                >
+                    Create Account
+                </button>
+            </form>
+        </main>
+    );
 }

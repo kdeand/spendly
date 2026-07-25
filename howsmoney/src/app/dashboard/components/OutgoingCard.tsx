@@ -186,87 +186,117 @@ export default function OutgoingCard() {
         }
     }
 
-    return(
-        <main>
-            <form onSubmit={handleSubmit}>
-
-                <div>
-                    <label htmlFor="amount"> Amount </label>
-                    <input 
-                        type="number"
-                        id = "amount"
-                        placeholder = "Enter Amount"
-                        value = {amount}
-                        onChange = {(e) => setAmount(e.target.value)} />
-                </div>
-
-                <div>
-                    <label htmlFor="category">Category</label>
-                    <select id="category"
-                        value = {category}
-                        onChange = {(e) => setCategory(e.target.value)}>
-                            {outgoingCategories.map((category) => (
-                                <option key = {category.name} 
-                                        value={category.name}>
-                                            {category.name}
-                                        </option>
-                            ))}
-                    </select>
-                </div>
-
-                <div>
-                    <label htmlFor="date">Date Spent</label>
-                    <input 
-                        type="date"
-                        id = "date"
-                        value = {date_spent}
-                        onChange = {(e) => setDateSpent(e.target.value)} />
-                </div>
-
-                <div>
-                    <label htmlFor="description">Description</label>
-                    <textarea
-                        id = "description"
-                        value = {description}
-                        onChange={(e) => setDescription(e.target.value)} />
-                </div>
-                <button type="submit">{editingId ? "Update Bill" : "Add Bill"}</button>
-            </form>
-
-            <table>
-                <thead>
-                    <tr>
-                        <th>Amount</th>
-                        <th>Category</th>
-                        <th>Date Spent</th>
-                        <th>Description</th>
-                        <th></th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    {outgoingRows.map((row, index)=> (
-                        <tr key = {index}>
-                            <td>{row.amount} </td>
-                            <td>{row.category} </td>
-                            <td>{row.date_spent}</td>
-                            <td>{row.description}</td>
-
-                            <td>
-                                <button onClick={() => {editOutgoing(row)}}>Edit</button>
-                            </td>
-                            <td>
-                                <button onClick={() => {deleteOutgoing(row.id)}}> X </button>
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
-
-            <div>
-                <h1>Total Outgoing: {totalOutgoing}</h1>
+return (
+    <main className="p-6">
+        <form
+            onSubmit={handleSubmit}
+            className="mb-8 flex max-w-md flex-col gap-4 rounded-lg bg-white p-6 shadow"
+        >
+            <div className="flex flex-col">
+                <label htmlFor="amount">Amount</label>
+                <input
+                    type="number"
+                    id="amount"
+                    placeholder="Enter Amount"
+                    value={amount}
+                    onChange={(e) => setAmount(e.target.value)}
+                    className="rounded border p-2"
+                />
             </div>
-        </main>
-    )
-    
+
+            <div className="flex flex-col">
+                <label htmlFor="category">Category</label>
+                <select
+                    id="category"
+                    value={category}
+                    onChange={(e) => setCategory(e.target.value)}
+                    className="rounded border p-2"
+                >
+                    {outgoingCategories.map((category) => (
+                        <option key={category.name} value={category.name}>
+                            {category.name}
+                        </option>
+                    ))}
+                </select>
+            </div>
+
+            <div className="flex flex-col">
+                <label htmlFor="date">Date Spent</label>
+                <input
+                    type="date"
+                    id="date"
+                    value={date_spent}
+                    onChange={(e) => setDateSpent(e.target.value)}
+                    className="rounded border p-2"
+                />
+            </div>
+
+            <div className="flex flex-col">
+                <label htmlFor="description">Description</label>
+                <textarea
+                    id="description"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    className="rounded border p-2"
+                />
+            </div>
+
+            <button
+                type="submit"
+                className="rounded bg-blue-600 py-2 text-white hover:bg-blue-700"
+            >
+                {editingId ? "Update Bill" : "Add Bill"}
+            </button>
+        </form>
+
+        <table className="w-full border-collapse border">
+            <thead className="bg-gray-100">
+                <tr>
+                    <th className="border p-2">Amount</th>
+                    <th className="border p-2">Category</th>
+                    <th className="border p-2">Date Spent</th>
+                    <th className="border p-2">Description</th>
+                    <th className="border p-2">Edit</th>
+                    <th className="border p-2">Delete</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {outgoingRows.map((row) => (
+                    <tr key={row.id}>
+                        <td className="border p-2">{row.amount}</td>
+                        <td className="border p-2">{row.category}</td>
+                        <td className="border p-2">{row.date_spent}</td>
+                        <td className="border p-2">{row.description}</td>
+
+                        <td className="border p-2">
+                            <button
+                                type="button"
+                                onClick={() => editOutgoing(row)}
+                                className="rounded bg-yellow-500 px-3 py-1 text-white"
+                            >
+                                Edit
+                            </button>
+                        </td>
+
+                        <td className="border p-2">
+                            <button
+                                type="button"
+                                onClick={() => deleteOutgoing(row.id)}
+                                className="rounded bg-red-600 px-3 py-1 text-white"
+                            >
+                                X
+                            </button>
+                        </td>
+                    </tr>
+                ))}
+            </tbody>
+        </table>
+
+        <div className="mt-6 rounded-lg bg-white p-4 shadow">
+            <h2 className="font-semibold">Summary</h2>
+            <p>Total Outgoing: {totalOutgoing}</p>
+        </div>
+    </main>
+);
 }        

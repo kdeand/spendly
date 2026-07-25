@@ -182,92 +182,117 @@ export default function ReceivedCard() {
         setDateReceived(row.date_received);
     }
 
-    return(
-        <main>
-            <form onSubmit = {handleSubmit}>
-                <div>
-                    <label htmlFor="amount">Amount</label>
-                    <input
-                        type="number"
-                        id="amount"
-                        placeholder="Enter amount"
-                        value = {amount}
-                        onChange = {(e) => setAmount(e.target.value)}
+    return (
+    <main className="p-6">
+        <form
+            onSubmit={handleSubmit}
+            className="mb-8 flex max-w-md flex-col gap-4 rounded-lg bg-white p-6 shadow"
+        >
+            <div className="flex flex-col">
+                <label htmlFor="amount">Amount</label>
+                <input
+                    type="number"
+                    id="amount"
+                    placeholder="Enter amount"
+                    value={amount}
+                    onChange={(e) => setAmount(e.target.value)}
+                    className="rounded border p-2"
+                />
+            </div>
 
-                    />
-                </div>
-                <div>
-                    <label htmlFor="category">Category</label>
-                    <select id="category"
-                    value = {category}
-                    onChange = {(e) => setCategory(e.target.value)}>
-                        {incomeCategories.map((category) => (
-                            <option
-                                key={category.name}
-                                value={category.name}
-                            >
-                                {category.name}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-                <div>
-                    <label htmlFor="date">Date Received</label>
-                    <input
-                        type="date"
-                        id="date"
-                        value = {date_received}
-                        onChange = {(e) => setDateReceived(e.target.value)}
+            <div className="flex flex-col">
+                <label htmlFor="category">Category</label>
+                <select
+                    id="category"
+                    value={category}
+                    onChange={(e) => setCategory(e.target.value)}
+                    className="rounded border p-2"
+                >
+                    {incomeCategories.map((category) => (
+                        <option key={category.name} value={category.name}>
+                            {category.name}
+                        </option>
+                    ))}
+                </select>
+            </div>
 
-                    />
-                </div>
+            <div className="flex flex-col">
+                <label htmlFor="date">Date Received</label>
+                <input
+                    type="date"
+                    id="date"
+                    value={date_received}
+                    onChange={(e) => setDateReceived(e.target.value)}
+                    className="rounded border p-2"
+                />
+            </div>
 
-                <div>
-                    <label htmlFor="description"> Description </label>
-                    <textarea name="description" 
+            <div className="flex flex-col">
+                <label htmlFor="description">Description</label>
+                <textarea
                     id="description"
-                     value = {description}
-                     onChange={(e) => setDescription(e.target.value)}>
-                    </textarea>
-                </div>
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    className="rounded border p-2"
+                />
+            </div>
 
-                <button type="submit">
-                    {editingId? "Update Income" : "Add Income"}
-                </button>
-            </form>
-            <table>
-                    <thead>
-                        <tr>
-                            <th>Amount</th>
-                            <th>Category</th>
-                            <th>Date Received</th>
-                            <th></th>
-                        </tr>
+            <button
+                type="submit"
+                className="rounded bg-blue-600 py-2 text-white hover:bg-blue-700"
+            >
+                {editingId ? "Update Income" : "Add Income"}
+            </button>
+        </form>
 
-                    </thead>
-                    <tbody>
-                        {receivedRows.map((row, index) => (
-                                <tr key={row.id}>
-                                <td>{row.amount}</td>
-                                <td>{row.category}</td>
-                                <td>{row.date_received}</td>
-                                <td>{row.description}</td>
-                                <td>
-                                    <button type="button" onClick = {() => {editReceived(row)} }>Edit</button>
-                                </td>
-                                <td>
-                                    <button type = "button" onClick={() => {deleteReceived(row.id)}}> X </button>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
+        <table className="w-full border-collapse border">
+            <thead className="bg-gray-100">
+                <tr>
+                    <th className="border p-2">Amount</th>
+                    <th className="border p-2">Category</th>
+                    <th className="border p-2">Date Received</th>
+                    <th className="border p-2">Description</th>
+                    <th className="border p-2">Edit</th>
+                    <th className="border p-2">Delete</th>
+                </tr>
+            </thead>
 
-                </table>
+            <tbody>
+                {receivedRows.map((row) => (
+                    <tr key={row.id}>
+                        <td className="border p-2">{row.amount}</td>
+                        <td className="border p-2">{row.category}</td>
+                        <td className="border p-2">{row.date_received}</td>
+                        <td className="border p-2">{row.description}</td>
 
-                <div>
-                    <h1> Total Income: {collectedAmount} </h1>
-                </div>
-        </main>
-        
-    )
+                        <td className="border p-2">
+                            <button
+                                type="button"
+                                onClick={() => editReceived(row)}
+                                className="rounded bg-yellow-500 px-3 py-1 text-white"
+                            >
+                                Edit
+                            </button>
+                        </td>
+
+                        <td className="border p-2">
+                            <button
+                                type="button"
+                                onClick={() => deleteReceived(row.id)}
+                                className="rounded bg-red-600 px-3 py-1 text-white"
+                            >
+                                X
+                            </button>
+                        </td>
+                    </tr>
+                ))}
+            </tbody>
+        </table>
+
+        <div className="mt-6 rounded-lg bg-white p-4 shadow">
+            <h2 className="font-semibold">Summary</h2>
+            <p>Total Income: {collectedAmount}</p>
+        </div>
+    </main>
+);
 }
