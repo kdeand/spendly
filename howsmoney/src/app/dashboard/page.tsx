@@ -8,7 +8,7 @@ import BillCard from "./components/BillCard";
 import SummaryCard from "./components/SummaryCard";
 
 export default function DashBoard() {
-    const [email, setEmail] = useState<String>("");
+    const [email, setEmail] = useState<string>("");
 
     useEffect(() => {
     async function getUser() {
@@ -33,7 +33,7 @@ export default function DashBoard() {
         <p className="welcome-text">Welcome back!</p>
         <p className="logged-in">Logged in as: {email}</p>
 
-        <h1>{email}'s Dashboard</h1>
+        <h1>{email}&apos;s Dashboard</h1>
     </header>
 
     <section className="dashboard-section">
